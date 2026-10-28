@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS MARKET - Smart Tech & Global Deals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+
+    <!-- Promo Top Bar -->
+    <div class="bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 text-xs py-2 px-4 flex justify-between items-center border-b border-indigo-800/40">
+        <div class="flex items-center gap-2 truncate">
+            <span class="bg-emerald-500 text-slate-950 font-bold px-1.5 py-0.5 rounded text-[10px] animate-pulse">NOVO</span>
+            <span>Besplatna dostava iznad 50 € | Kod: <strong class="text-emerald-400">NEXUS10</strong></span>
+        </div>
+        <div class="flex items-center gap-4 shrink-0">
+            <button onclick="openEmailModal()" class="hover:text-indigo-300 transition flex items-center gap-1"><i class="fa-solid fa-gear"></i> Postavke</button>
+        </div>
+    </div>
+
+    <!-- Main Navigation Header -->
+    <header class="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            <a href="#" class="flex items-center gap-2 shrink-0">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-emerald-400 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <i class="fa-solid fa-cube text-white text-lg"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-black tracking-wider bg-gradient-to-r from-white via-indigo-200 to-indigo-400 bg-clip-text text-transparent">NEXUS</span>
+                    <span class="text-xs font-semibold tracking-widest text-emerald-400 block -mt-1">MARKET</span>
+                </div>
+            </a>
+            <div class="flex items-center gap-3">
+                <button onclick="openCart()" class="relative p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition flex items-center gap-2 shadow-lg shadow-indigo-600/20">
+                    <i class="fa-solid fa-bag-shopping text-lg"></i>
+                    <span id="cartCount" class="bg-white text-indigo-950 font-bold text-xs px-1.5 py-0.5 rounded-md">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
+        <div class="relative rounded-3xl overflow-hidden bg-gradient-to-r from-indigo-950 via-purple-950 to-slate-900 border border-indigo-500/20 p-6 md:p-10 mb-10 shadow-2xl">
+            <div class="max-w-xl relative z-10">
+                <span class="inline-block bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-bold px-3 py-1 rounded-full mb-4">NEXUS MARKET ONLINE</span>
+                <h1 class="text-3xl md:text-5xl font-black tracking-tight mb-4">Vaš džepni trgovački centar.</h1>
+                <p class="text-slate-300 text-sm md:text-base mb-6">Pregledajte artikle i naručite direktno preko mobitela.</p>
+            </div>
+        </div>
+
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold tracking-tight">Izdvojeni Proizvodi</h2>
+            <div class="text-xs text-slate-400" id="productCount">Prikazuje se 4 artikala</div>
+        </div>
+
+        <div id="productsGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 md:gap-6"></div>
+    </main>
+
+    <!-- Cart Drawer Modal -->
+    <div id="cartModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex justify-end">
+        <div class="bg-slate-900 w-full max-w-md h-full border-l border-slate-800 flex flex-col p-6 shadow-2xl">
+            <div class="flex justify-between items-center pb-4 border-b border-slate-800">
+                <h3 class="font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-bag-shopping text-indigo-400"></i> Košarica</h3>
+                <button onclick="closeCart()" class="text-slate-400 hover:text-white p-2"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div id="cartItemsList" class="flex-1 overflow-y-auto py-4 space-y-3"></div>
+            <div class="pt-4 border-t border-slate-800 space-y-3">
+                <div class="flex gap-2">
+                    <input type="text" id="couponInput" placeholder="Kupon (NEXUS10)" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs uppercase">
+                    <button onclick="applyCoupon()" class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-xl text-xs font-bold transition">Primijeni</button>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-slate-400">Ukupno:</span>
+                    <span id="cartTotalPrice" class="font-bold text-emerald-400 text-lg">0.00 €</span>
+                </div>
+                <button onclick="openCheckoutModal()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-2xl transition shadow-lg">Idi na Naplatu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 w-full max-w-lg rounded-3xl border border-slate-800 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-4 border-b border-slate-800 mb-4">
+                <h3 class="font-bold text-lg">Podaci za dostavu</h3>
+                <button onclick="closeCheckoutModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="checkoutForm" onsubmit="submitOrder(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Ime i Prezime</label>
+                    <input type="text" id="custName" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Broj mobitela</label>
+                    <input type="text" id="custPhone" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Adresa i Grad</label>
+                    <input type="text" id="custAddress" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm outline-none">
+                </div>
+                <div class="pt-2">
+                    <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-2xl transition shadow-lg">Potvrdi narudžbu (Pouzećem)</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Email Settings Modal -->
+    <div id="emailModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 w-full max-w-md rounded-3xl border border-slate-800 p-6 shadow-2xl">
+            <div class="flex justify-between items-center pb-4 border-b border-slate-800 mb-4">
+                <h3 class="font-bold text-lg">EmailJS Postavke</h3>
+                <button onclick="closeEmailModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="space-y-3 text-xs text-slate-300">
+                <input type="text" id="esServiceId" placeholder="Service ID" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2">
+                <input type="text" id="esTemplateId" placeholder="Template ID" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2">
+                <input type="text" id="esPublicKey" placeholder="Public Key" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2">
+                <button onclick="saveEmailSettings()" class="w-full bg-indigo-600 hover:bg-indigo-500 font-bold py-2.5 rounded-xl transition">Spremi</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            { id: 1, name: "Nexus Pulse Smartwatch Pro", price: 49.99, oldPrice: 99.99, rating: 4.9, image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500" },
+            { id: 2, name: "SonicBass RGB Slušalice", price: 29.99, oldPrice: 69.99, rating: 4.8, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500" },
+            { id: 3, name: "NovaGlow Pametna Lampa", price: 24.99, oldPrice: 49.99, rating: 4.7, image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=500" },
+            { id: 4, name: "UrbanFlow Ruksak", price: 34.99, oldPrice: 79.99, rating: 4.9, image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500" }
+        ];
+
+        let cart = [];
+        let currentDiscount = 0;
+
+        function renderProducts(items) {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = items.map(p => `
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden flex flex-col group">
+                    <div class="relative overflow-hidden aspect-square bg-slate-950">
+                        <img src="${p.image}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4 flex flex-col flex-1 justify-between gap-3">
+                        <div>
+                            <h3 class="font-medium text-sm line-clamp-2 mb-1">${p.name}</h3>
+                            <span class="text-amber-400 text-xs"><i class="fa-solid fa-star"></i> ${p.rating}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-lg font-black text-emerald-400">${p.price.toFixed(2)} €</span>
+                            <button onclick="addToCart(${p.id})" class="bg-indigo-600 hover:bg-indigo-500 text-white w-9 h-9 rounded-xl flex items-center justify-center transition shadow-lg">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(id) {
+            const prod = products.find(p => p.id === id);
+            const found = cart.find(i => i.id === id);
+            if(found) found.qty++;
+            else cart.push({...prod, qty: 1});
+            updateCartUI();
+            openCart();
+        }
+
+        function updateCartUI() {
+            document.getElementById('cartCount').innerText = cart.reduce((sum, i) => sum + i.qty, 0);
+            const list = document.getElementById('cartItemsList');
+            if(cart.length === 0) {
+                list.innerHTML = `<p class="text-slate-500 text-center py-8 text-sm">Košarica je prazna.</p>`;
+                document.getElementById('cartTotalPrice').innerText = '0.00 €';
+                return;
+            }
+            list.innerHTML = cart.map(i => `
+                <div class="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <img src="${i.image}" class="w-12 h-12 rounded-lg object-cover">
+                        <div>
+                            <h4 class="text-xs font-semibold">${i.name}</h4>
+                            <span class="text-xs text-emerald-400 font-bold">${i.price.toFixed(2)} € x ${i.qty}</span>
+                        </div>
+                    </div>
+                    <button onclick="removeFromCart(${i.id})" class="text-slate-500 hover:text-red-400 p-2"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
+
+            let total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+            total = total * (1 - currentDiscount);
+            document.getElementById('cartTotalPrice').innerText = total.toFixed(2) + ' €';
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(i => i.id !== id);
+            updateCartUI();
+        }
+
+        function applyCoupon() {
+            if(document.getElementById('couponInput').value.trim().toUpperCase() === 'NEXUS10') {
+                currentDiscount = 0.10;
+                alert('Kupon primijenjen (-10%)!');
+                updateCartUI();
+            } else alert('Nevažeći kupon!');
+        }
+
+        function openCart() { document.getElementById('cartModal').classList.remove('hidden'); }
+        function closeCart() { document.getElementById('cartModal').classList.add('hidden'); }
+        function openCheckoutModal() { if(cart.length === 0) return alert('Prazna košarica!'); closeCart(); document.getElementById('checkoutModal').classList.remove('hidden'); }
+        function closeCheckoutModal() { document.getElementById('checkoutModal').classList.add('hidden'); }
+        function openEmailModal() { document.getElementById('emailModal').classList.remove('hidden'); }
+        function closeEmailModal() { document.getElementById('emailModal').classList.add('hidden'); }
+
+        function saveEmailSettings() {
+            localStorage.setItem('esService', document.getElementById('esServiceId').value);
+            localStorage.setItem('esTemplate', document.getElementById('esTemplateId').value);
+            localStorage.setItem('esPublic', document.getElementById('esPublicKey').value);
+            alert('Spremljeno!');
+            closeEmailModal();
+        }
+
+        function submitOrder(e) {
+            e.preventDefault();
+            alert('Narudžba uspješno zaprimljena!');
+            cart = [];
+            updateCartUI();
+            closeCheckoutModal();
+        }
+
+        renderProducts(products);
+    </script>
+</body>
+</html>
